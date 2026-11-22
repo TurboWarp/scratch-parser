@@ -32,7 +32,7 @@ test('invalid comments sb3', function (t) {
         t.type(sb3Errors, 'object');
         t.type(sb3Errors[0].keyword, 'string');
         t.type(sb3Errors[0].instancePath, 'string');
-        t.match(sb3Errors[0].instancePath, /^\/targets\/1\/comments\/.*\/width$/);
+        t.match(sb3Errors[0].instancePath, /^\.targets\[1\]\.comments\[.*\]\.width$/);
         t.type(sb3Errors[0].schemaPath, 'string');
         t.type(sb3Errors[0].message, 'string');
         t.equal(sb3Errors[0].message, 'must be number');

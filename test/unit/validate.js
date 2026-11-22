@@ -256,7 +256,7 @@ test('NaN and Infinity are allowed as numbers', function (t) {
     });
 });
 
-test('sb3 duplicate check treats special keys and NaN like ajv 6 did', function (t) {
+test('sb3 duplicate check compares special keys as properties and NaN as unequal', function (t) {
     var assetId = 'a'.repeat(32);
     var costume = function (extra) {
         return Object.assign({assetId: assetId, name: 'c1', dataFormat: 'svg', md5ext: assetId + '.svg'}, extra);
