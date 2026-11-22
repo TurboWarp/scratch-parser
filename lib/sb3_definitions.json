@@ -101,8 +101,7 @@
                 {"type":"string", "description": "name of the list"},
                 {
                     "type": "array",
-                    "description": "contents of the list",
-                    "items": {"$ref":"#/definitions/scalarVal"}
+                    "description": "contents of the list. Can be anything."
                 }
             ],
             "additionalItems": false
