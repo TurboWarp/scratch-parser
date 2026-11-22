@@ -46,7 +46,7 @@ test('invalid, whole project', function (t) {
         t.type(res, 'undefined');
         t.type(sb2Errs[0], 'object');
         t.type(sb2Errs[0].keyword, 'string');
-        t.type(sb2Errs[0].dataPath, 'string');
+        t.type(sb2Errs[0].instancePath, 'string');
         t.type(sb2Errs[0].schemaPath, 'string');
         t.type(sb2Errs[0].message, 'string');
         t.type(sb2Errs[0].params, 'object');
@@ -64,7 +64,7 @@ test('invalid, sprite', function (t) {
         t.type(res, 'undefined');
         t.type(sb2Errs[0], 'object');
         t.type(sb2Errs[0].keyword, 'string');
-        t.type(sb2Errs[0].dataPath, 'string');
+        t.type(sb2Errs[0].instancePath, 'string');
         t.type(sb2Errs[0].schemaPath, 'string');
         t.type(sb2Errs[0].message, 'string');
         t.type(sb2Errs[0].params, 'object');
@@ -235,4 +235,50 @@ test('sb3 costumes that differ only by name are allowed', function (t) {
         t.equal(res.costumes.length, 2);
         t.end();
     });
+});
+
+test('NaN and Infinity are allowed as numbers', function (t) {
+    var sprite2 = JSON.parse('{"objName":"Sprite1","costumes":[],"currentCostumeIndex":0,"scratchX":1e400}');
+    t.equal(sprite2.scratchX, Infinity);
+    validate(true, sprite2, function (err, res) {
+        t.equal(err, null);
+        t.equal(res.projectVersion, 2);
+
+        var sprite3 = makeSprite3({});
+        sprite3.x = Infinity;
+        sprite3.y = -Infinity;
+        sprite3.direction = NaN;
+        validate(true, sprite3, function (err2, res2) {
+            t.equal(err2, null);
+            t.equal(res2.projectVersion, 3);
+            t.end();
+        });
+    });
+});
+
+test('sb3 duplicate check treats special keys and NaN like ajv 6 did', function (t) {
+    var assetId = 'a'.repeat(32);
+    var costume = function (extra) {
+        return Object.assign({assetId: assetId, name: 'c1', dataFormat: 'svg', md5ext: assetId + '.svg'}, extra);
+    };
+    var cases = [
+        // Not functions, so they must not be called
+        {costumes: [costume({toString: 1}), costume({toString: 2})], valid: true},
+        {costumes: [costume({valueOf: {}}), costume({valueOf: []})], valid: true},
+        // Just a regular property
+        {costumes: [costume({constructor: {a: 1}}), costume({constructor: {a: 1}})], valid: false},
+        // NaN is not equal to itself
+        {costumes: [costume({rotationCenterX: NaN}), costume({rotationCenterX: NaN})], valid: true}
+    ];
+    var next = function (i) {
+        if (i === cases.length) {
+            t.end();
+            return;
+        }
+        validate(true, makeSprite3({}, cases[i].costumes), function (err) {
+            t.equal(err === null, cases[i].valid, 'case ' + i);
+            next(i + 1);
+        });
+    };
+    next(0);
 });

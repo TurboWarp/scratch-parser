@@ -1,6 +1,6 @@
 {
     "$id": "https://scratch.mit.edu/sb3_definitions.json",
-    "$schema": "http://json-schema.org/schema#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "description": "Scratch 3.0 Project and Sprite Schema Definitions",
     "definitions": {
         "optionalString": {

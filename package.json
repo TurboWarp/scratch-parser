@@ -21,11 +21,10 @@
     "@turbowarp/json": "^0.1.1",
     "@turbowarp/jszip": "^3.11.0",
     "@turbowarp/sb3fix": "^0.5.0",
-    "ajv": "6.3.0",
+    "ajv": "8.20.0",
     "pify": "4.0.1"
   },
   "devDependencies": {
-    "ajv-pack": "0.3.1",
     "babel-eslint": "10.1.0",
     "eslint": "^8.0.0",
     "eslint-config-scratch": "9.0.3",
