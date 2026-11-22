@@ -14,7 +14,8 @@
     "test:unit": "tap test/unit/*.js",
     "test:integration": "tap test/integration/*.js",
     "test:coverage": "tap test/{unit,integration}/*.js --coverage --coverage-report=lcov",
-    "test": "npm run test:unit && npm run test:integration"
+    "test": "npm run test:unit && npm run test:integration",
+    "build:validators": "node scripts/build-validators.js"
   },
   "dependencies": {
     "@turbowarp/json": "^0.1.1",
@@ -24,6 +25,7 @@
     "pify": "4.0.1"
   },
   "devDependencies": {
+    "ajv-pack": "0.3.1",
     "babel-eslint": "10.1.0",
     "eslint": "^8.0.0",
     "eslint-config-scratch": "9.0.3",
