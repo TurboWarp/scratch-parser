@@ -1,92 +1,93 @@
 var fs = require('fs');
 var path = require('path');
-var test = require('tap').test;
+var test = require('node:test');
+var assert = require('node:assert/strict');
 var parse = require('../../lib/parse');
 var data = require('../fixtures/data');
 
-test('spec', function (t) {
-    t.type(parse, 'function');
-    t.end();
+test('spec', function (t, done) {
+    assert.equal(typeof parse, 'function');
+    done();
 });
 
-test('valid', function (t) {
+test('valid', function (t, done) {
     for (var i = 0; i < data.json.length; i++) {
         parse(data.json[i].toString(), function (err, res) {
-            t.equal(err, null);
-            t.type(res, 'object');
+            assert.equal(err, null);
+            assert.equal(typeof res, 'object');
         });
     }
-    t.end();
+    done();
 });
 
-test('invalid', function (t) {
+test('invalid', function (t, done) {
     parse('&%@', function (err, res) {
-        t.type(err, 'string');
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('backspace control characters get stripped out in sb2', function (t) {
+test('backspace control characters get stripped out in sb2', function (t, done) {
     var backspaceControlSb2 = fs.readFileSync(
         path.resolve(__dirname, '../fixtures/data/217845144_sb2_control_char_in_strings_credit_to_Mr-Dave_test.json'));
     parse(backspaceControlSb2.toString(), function (err, res) {
-        t.equal(err, null);
-        t.type(res, 'object');
+        assert.equal(err, null);
+        assert.equal(typeof res, 'object');
 
         // Verify that the object doesn't have a control character in the global variable name
-        t.equal(Array.isArray(res.variables), true);
-        t.equal(res.variables.length, 1);
+        assert.equal(Array.isArray(res.variables), true);
+        assert.equal(res.variables.length, 1);
         // The parsed string should no longer include a backspace control character
-        t.equal(res.variables[0].name, 'b-damage');
-        t.end();
+        assert.equal(res.variables[0].name, 'b-damage');
+        done();
     });
 });
 
-test('backspace control characters get stripped out in sb3', function (t) {
+test('backspace control characters get stripped out in sb3', function (t, done) {
     var backspaceControlSb2 = fs.readFileSync(
         path.resolve(__dirname, '../fixtures/data/217845144_sb3_control_char_in_strings_credit_to_Mr-Dave_test.json'));
     parse(backspaceControlSb2.toString(), function (err, res) {
-        t.equal(err, null);
-        t.type(res, 'object');
+        assert.equal(err, null);
+        assert.equal(typeof res, 'object');
 
         // Verify that the object doesn't have a control character in the global variable name
-        t.equal(Array.isArray(res.targets), true);
-        t.equal(res.targets.length, 2);
-        t.type(res.targets[0].variables, 'object');
+        assert.equal(Array.isArray(res.targets), true);
+        assert.equal(res.targets.length, 2);
+        assert.equal(typeof res.targets[0].variables, 'object');
         var backspaceControlVariableId = Object.keys(res.targets[0].variables)[0];
         var backspaceControlVariable = res.targets[0].variables[backspaceControlVariableId];
         // The parsed string should no longer include a backspace control character
-        t.equal(backspaceControlVariable[0], 'b-damage');
-        t.end();
+        assert.equal(backspaceControlVariable[0], 'b-damage');
+        done();
     });
 });
 
-test('backslashes are kept when stripping backspace control characters', function (t) {
+test('backslashes are kept when stripping backspace control characters', function (t, done) {
     var json = JSON.stringify({
         test: '\\\\\baaa\ba'
     });
     parse(json, function (err, res) {
-        t.equal(err, null);
-        t.type(res, 'object');
-        t.equal(res.test, '\\\\aaaa');
-        t.end();
+        assert.equal(err, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.test, '\\\\aaaa');
+        done();
     });
 });
 
-test('backslashes followed by b are not stripped at all', function (t) {
+test('backslashes followed by b are not stripped at all', function (t, done) {
     var json = JSON.stringify({
         test: '\\b\b\\\\b'
     });
     parse(json, function (err, res) {
-        t.equal(err, null);
-        t.type(res, 'object');
-        t.equal(res.test, '\\b\\\\b');
-        t.end();
+        assert.equal(err, null);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.test, '\\b\\\\b');
+        done();
     });
 });
 
-test('supports non-standard Scratch 2 JSON', (t) => {
+test('supports non-standard Scratch 2 JSON', (t, done) => {
     const json = `
     {
         // This is a line comment
@@ -102,14 +103,14 @@ test('supports non-standard Scratch 2 JSON', (t) => {
     This is some extra garbage at the end that should be ignored.
     `;
     parse(json, (err, res) => {
-        t.equal(err, null);
-        t.same(res, {
+        assert.equal(err, null);
+        assert.deepEqual(res, {
             something: [
                 Infinity,
                 -Infinity,
                 NaN
             ]
         });
-        t.end();
+        done();
     });
 });

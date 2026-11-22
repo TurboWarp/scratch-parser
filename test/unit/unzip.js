@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
-var test = require('tap').test;
+var test = require('node:test');
+var assert = require('node:assert/strict');
 var JSZip = require('@turbowarp/jszip');
 var unzip = require('../../lib/unzip');
 
@@ -20,136 +21,136 @@ for (var i in fixtures) {
 
 var errorMessage = 'Failed to unzip and extract project.json';
 
-test('spec', function (t) {
-    t.type(unzip, 'function');
-    t.end();
+test('spec', function (t, done) {
+    assert.equal(typeof unzip, 'function');
+    done();
 });
 
-test('sb', function (t) {
+test('sb', function (t, done) {
     var buffer = new Buffer(fixtures.sb);
     unzip(buffer, false, function (err, res) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('sb2', function (t) {
+test('sb2', function (t, done) {
     var buffer = new Buffer(fixtures.sb2);
     unzip(buffer, false, function (err, res) {
-        t.equal(err, null);
-        t.equal(Array.isArray(res), true);
-        t.type(res[0], 'string');
-        t.doesNotThrow(function () {
+        assert.equal(err, null);
+        assert.equal(Array.isArray(res), true);
+        assert.equal(typeof res[0], 'string');
+        assert.doesNotThrow(function () {
             JSON.parse(res[0]);
         });
-        t.equal(res[1] instanceof JSZip, true);
-        t.end();
+        assert.equal(res[1] instanceof JSZip, true);
+        done();
     });
 });
 
-test('sb2 with nested folder', function (t) {
+test('sb2 with nested folder', function (t, done) {
     var buffer = new Buffer(fixtures.sb2Nested);
     unzip(buffer, false, function (err, res) {
-        t.equal(err, null);
-        t.equal(Array.isArray(res), true);
-        t.type(res[0], 'string');
-        t.doesNotThrow(function () {
+        assert.equal(err, null);
+        assert.equal(Array.isArray(res), true);
+        assert.equal(typeof res[0], 'string');
+        assert.doesNotThrow(function () {
             JSON.parse(res[0]);
         });
-        t.equal(res[1] instanceof JSZip, true);
-        t.end();
+        assert.equal(res[1] instanceof JSZip, true);
+        done();
     });
 });
 
-test('zip without project json', function (t) {
+test('zip without project json', function (t, done) {
     var buffer = new Buffer(fixtures.zipNoProjectJSON);
     unzip(buffer, false, function (err, res) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('zip with fake project json', function (t) {
+test('zip with fake project json', function (t, done) {
     var buffer = new Buffer(fixtures.zipFakeProjectJSON);
     unzip(buffer, false, function (err, res) {
-        t.equal(err, null);
-        t.equal(Array.isArray(res), true);
-        t.type(res[0], 'string');
-        t.equal(res[0], 'this is not json\n');
-        t.throws(function () {
+        assert.equal(err, null);
+        assert.equal(Array.isArray(res), true);
+        assert.equal(typeof res[0], 'string');
+        assert.equal(res[0], 'this is not json\n');
+        assert.throws(function () {
             JSON.parse(res[0]);
         });
-        t.equal(res[1] instanceof JSZip, true);
-        t.end();
+        assert.equal(res[1] instanceof JSZip, true);
+        done();
     });
 });
 
 var randomString = 'this is not a zip';
 
-test('random string instead of zip, whole project', function (t) {
+test('random string instead of zip, whole project', function (t, done) {
     unzip(randomString, false, function (err, res) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('random string instead of zip, sprite', function (t) {
+test('random string instead of zip, sprite', function (t, done) {
     unzip(randomString, true, function (err, res) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('undefined', function (t) {
+test('undefined', function (t, done) {
     var foo;
     unzip(foo, false, function (err, obj) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(obj, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof obj, 'undefined');
+        done();
     });
 });
 
-test('null instead of zip, whole project', function (t) {
+test('null instead of zip, whole project', function (t, done) {
     unzip(null, false, function (err, obj) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(obj, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof obj, 'undefined');
+        done();
     });
 });
 
-test('null instead of zip, sprite', function (t) {
+test('null instead of zip, sprite', function (t, done) {
     unzip(null, true, function (err, obj) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(obj, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof obj, 'undefined');
+        done();
     });
 });
 
-test('object instead of zip, whole project', function (t) {
+test('object instead of zip, whole project', function (t, done) {
     unzip({}, false, function (err, obj) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(obj, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof obj, 'undefined');
+        done();
     });
 });
 
-test('object instead of zip, sprite', function (t) {
+test('object instead of zip, sprite', function (t, done) {
     unzip({}, true, function (err, obj) {
-        t.type(err, 'string');
-        t.equal(err.startsWith(errorMessage), true);
-        t.type(obj, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(err.startsWith(errorMessage), true);
+        assert.equal(typeof obj, 'undefined');
+        done();
     });
 });

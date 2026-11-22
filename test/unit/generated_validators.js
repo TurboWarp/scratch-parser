@@ -1,14 +1,14 @@
 const fs = require('fs');
 const path = require('path');
-const {test} = require('tap');
+const {test} = require('node:test');
+const assert = require('node:assert/strict');
 const builder = require('../../scripts/build-validators');
 
-test('generated validators are up to date (run: npm run build:validators)', t => {
+test('generated validators are up to date (run: npm run build:validators)', () => {
     for (const [fileName, contents] of Object.entries(builder.generate())) {
         const existing = fs.readFileSync(path.join(builder.OUTPUT_DIRECTORY, fileName), 'utf8');
-        t.equal(existing, contents, fileName);
+        assert.equal(existing, contents, fileName);
     }
-    t.end();
 });
 
 const findJSONFixtures = directory => fs.readdirSync(directory, {withFileTypes: true}).flatMap(entry => {
@@ -25,7 +25,7 @@ const findJSONFixtures = directory => fs.readdirSync(directory, {withFileTypes: 
     }
 });
 
-test('generated validators behave the same as ajv', t => {
+test('generated validators behave the same as ajv', () => {
     const ajv = builder.createAjv();
     const pairs = {};
     for (const [fileName, schemas] of Object.entries(builder.FILES)) {
@@ -35,7 +35,7 @@ test('generated validators behave the same as ajv', t => {
             pairs[`${fileName} ${exportName}`] = [ajv.getSchema(schema.$id), generated[exportName]];
         }
     }
-    t.equal(Object.keys(pairs).length, 4);
+    assert.equal(Object.keys(pairs).length, 4);
 
     const inputs = [];
     for (const input of findJSONFixtures(path.join(__dirname, '..', 'fixtures', 'data'))) {
@@ -62,13 +62,12 @@ test('generated validators behave the same as ajv', t => {
             inputs.push(badName);
         }
     }
-    t.ok(inputs.length > 20, 'found fixtures');
+    assert.ok(inputs.length > 20, 'found fixtures');
 
     inputs.forEach((input, index) => {
         for (const [type, [live, generated]] of Object.entries(pairs)) {
-            t.equal(generated(input), live(input), `${type} result ${index}`);
-            t.same(generated.errors, live.errors, `${type} errors ${index}`);
+            assert.equal(generated(input), live(input), `${type} result ${index}`);
+            assert.deepEqual(generated.errors, live.errors, `${type} errors ${index}`);
         }
     });
-    t.end();
 });

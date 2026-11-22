@@ -1,51 +1,52 @@
-var test = require('tap').test;
+var test = require('node:test');
+var assert = require('node:assert/strict');
 var JSZip = require('@turbowarp/jszip');
 var data = require('../fixtures/data');
 var parser = require('../../index');
 
-test('sb', function (t) {
+test('sb', function (t, done) {
     parser(data.empty.sb, false, function (err, res) {
-        t.type(err, 'string');
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'string');
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('sb2', function (t) {
+test('sb2', function (t, done) {
     parser(data.empty.sb2, false, function (err, result) {
-        t.equal(err, null);
-        t.equal(Array.isArray(result), true);
+        assert.equal(err, null);
+        assert.equal(Array.isArray(result), true);
         var res = result[0];
         var possibleZip = result[1];
-        t.type(res, 'object');
-        t.type(res.info, 'object');
-        t.equal(possibleZip instanceof JSZip, true);
-        t.end();
+        assert.equal(typeof res, 'object');
+        assert.equal(typeof res.info, 'object');
+        assert.equal(possibleZip instanceof JSZip, true);
+        done();
     });
 });
 
-test('json', function (t) {
+test('json', function (t, done) {
     parser(data.empty.json, false, function (err, result) {
-        t.equal(err, null);
-        t.equal(Array.isArray(result), true);
+        assert.equal(err, null);
+        assert.equal(Array.isArray(result), true);
         var res = result[0];
         var possibleZip = result[1];
-        t.type(res, 'object');
-        t.type(res.info, 'object');
-        t.equal(possibleZip, null);
-        t.end();
+        assert.equal(typeof res, 'object');
+        assert.equal(typeof res.info, 'object');
+        assert.equal(possibleZip, null);
+        done();
     });
 });
 
-test('json string', function (t) {
+test('json string', function (t, done) {
     parser(data.empty.json.toString('utf-8'), false, function (err, result) {
-        t.equal(err, null);
-        t.equal(Array.isArray(result), true);
+        assert.equal(err, null);
+        assert.equal(Array.isArray(result), true);
         var res = result[0];
         var possibleZip = result[1];
-        t.type(res, 'object');
-        t.type(res.info, 'object');
-        t.equal(possibleZip, null);
-        t.end();
+        assert.equal(typeof res, 'object');
+        assert.equal(typeof res.info, 'object');
+        assert.equal(possibleZip, null);
+        done();
     });
 });

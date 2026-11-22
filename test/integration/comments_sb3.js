@@ -1,44 +1,45 @@
-var test = require('tap').test;
+var test = require('node:test');
+var assert = require('node:assert/strict');
 var JSZip = require('@turbowarp/jszip');
 var data = require('../fixtures/data');
 var parser = require('../../index');
 
-test('comments sb3', function (t) {
+test('comments sb3', function (t, done) {
     parser(data.sb3_comments.comments, false, function (err, result) {
-        t.equal(err, null);
-        t.equal(Array.isArray(result), true);
+        assert.equal(err, null);
+        assert.equal(Array.isArray(result), true);
         var res = result[0];
         var possibleZip = result[1];
-        t.type(res, 'object');
-        t.equal(res.projectVersion, 3);
-        t.equal(possibleZip instanceof JSZip, true);
+        assert.equal(typeof res, 'object');
+        assert.equal(res.projectVersion, 3);
+        assert.equal(possibleZip instanceof JSZip, true);
 
-        t.type(res.targets[0].comments, 'object');
-        t.equal(Object.values(res.targets[0].comments).length, 1);
+        assert.equal(typeof res.targets[0].comments, 'object');
+        assert.equal(Object.values(res.targets[0].comments).length, 1);
 
-        t.type(res.targets[1].comments, 'object');
-        t.equal(Object.values(res.targets[1].comments).length, 6);
+        assert.equal(typeof res.targets[1].comments, 'object');
+        assert.equal(Object.values(res.targets[1].comments).length, 6);
 
-        t.end();
+        done();
     });
 });
 
-test('invalid comments sb3', function (t) {
+test('invalid comments sb3', function (t, done) {
     parser(data.sb3_comments.invalid_comments, false, function (err, result) {
-        t.type(err, 'object');
-        t.type(err.validationError, 'string');
+        assert.equal(typeof err, 'object');
+        assert.equal(typeof err.validationError, 'string');
 
         var sb3Errors = err.sb3Errors;
-        t.type(sb3Errors, 'object');
-        t.type(sb3Errors[0].keyword, 'string');
-        t.type(sb3Errors[0].instancePath, 'string');
-        t.match(sb3Errors[0].instancePath, /^\.targets\[1\]\.comments\[.*\]\.width$/);
-        t.type(sb3Errors[0].schemaPath, 'string');
-        t.type(sb3Errors[0].message, 'string');
-        t.equal(sb3Errors[0].message, 'must be number');
-        t.type(sb3Errors[0].params, 'object');
-        t.type(result, 'undefined');
+        assert.equal(typeof sb3Errors, 'object');
+        assert.equal(typeof sb3Errors[0].keyword, 'string');
+        assert.equal(typeof sb3Errors[0].instancePath, 'string');
+        assert.match(sb3Errors[0].instancePath, /^\.targets\[1\]\.comments\[.*\]\.width$/);
+        assert.equal(typeof sb3Errors[0].schemaPath, 'string');
+        assert.equal(typeof sb3Errors[0].message, 'string');
+        assert.equal(sb3Errors[0].message, 'must be number');
+        assert.equal(typeof sb3Errors[0].params, 'object');
+        assert.equal(typeof result, 'undefined');
 
-        t.end();
+        done();
     });
 });

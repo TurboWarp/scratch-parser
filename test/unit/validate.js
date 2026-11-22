@@ -1,125 +1,126 @@
-var test = require('tap').test;
+var test = require('node:test');
+var assert = require('node:assert/strict');
 var data = require('../fixtures/data');
 var validate = require('../../lib/validate');
 
-test('spec', function (t) {
-    t.type(validate, 'function');
-    t.end();
+test('spec', function (t, done) {
+    assert.equal(typeof validate, 'function');
+    done();
 });
 
-test('valid sb2 project', function (t) {
+test('valid sb2 project', function (t, done) {
     validate(false, JSON.parse(data.example.json), function (err, res) {
-        t.equal(err, null);
-        t.type(res, 'object');
-        t.end();
+        assert.equal(err, null);
+        assert.equal(typeof res, 'object');
+        done();
     });
 });
 
-test('valid sprite2', function (t) {
+test('valid sprite2', function (t, done) {
     validate(true, JSON.parse(data.sprites.default_cat_sprite2_json), function (err, res) {
-        t.equal(err, null);
-        t.type(res, 'object');
-        t.end();
+        assert.equal(err, null);
+        assert.equal(typeof res, 'object');
+        done();
     });
 });
 
 // Note, the way the sb2/sprite2 validation is written, a valid sb2 project can actually
 // validate as a sprite2 file. The opposite should not be true.
 
-test('valid sprite2 is not a valid project', function (t) {
+test('valid sprite2 is not a valid project', function (t, done) {
     validate(false, JSON.parse(data.sprites.default_cat_sprite2_json), function (err, res) {
-        t.type(err, 'object');
-        t.type(err.validationError, 'string');
+        assert.equal(typeof err, 'object');
+        assert.equal(typeof err.validationError, 'string');
         var sb2Errs = err.sb2Errors;
-        t.equal(Array.isArray(sb2Errs), true);
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(Array.isArray(sb2Errs), true);
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('invalid, whole project', function (t) {
+test('invalid, whole project', function (t, done) {
     validate(false, {foo: 1}, function (err, res) {
-        t.type(err, 'object');
-        t.type(err.validationError, 'string');
+        assert.equal(typeof err, 'object');
+        assert.equal(typeof err.validationError, 'string');
         var sb2Errs = err.sb2Errors;
-        t.equal(Array.isArray(sb2Errs), true);
-        t.type(res, 'undefined');
-        t.type(sb2Errs[0], 'object');
-        t.type(sb2Errs[0].keyword, 'string');
-        t.type(sb2Errs[0].instancePath, 'string');
-        t.type(sb2Errs[0].schemaPath, 'string');
-        t.type(sb2Errs[0].message, 'string');
-        t.type(sb2Errs[0].params, 'object');
-        t.type(sb2Errs[0].params.missingProperty, 'string');
-        t.end();
+        assert.equal(Array.isArray(sb2Errs), true);
+        assert.equal(typeof res, 'undefined');
+        assert.equal(typeof sb2Errs[0], 'object');
+        assert.equal(typeof sb2Errs[0].keyword, 'string');
+        assert.equal(typeof sb2Errs[0].instancePath, 'string');
+        assert.equal(typeof sb2Errs[0].schemaPath, 'string');
+        assert.equal(typeof sb2Errs[0].message, 'string');
+        assert.equal(typeof sb2Errs[0].params, 'object');
+        assert.equal(typeof sb2Errs[0].params.missingProperty, 'string');
+        done();
     });
 });
 
-test('invalid, sprite', function (t) {
+test('invalid, sprite', function (t, done) {
     validate(true, {foo: 1}, function (err, res) {
-        t.type(err, 'object');
-        t.type(err.validationError, 'string');
+        assert.equal(typeof err, 'object');
+        assert.equal(typeof err.validationError, 'string');
         var sb2Errs = err.sb2Errors;
-        t.equal(Array.isArray(sb2Errs), true);
-        t.type(res, 'undefined');
-        t.type(sb2Errs[0], 'object');
-        t.type(sb2Errs[0].keyword, 'string');
-        t.type(sb2Errs[0].instancePath, 'string');
-        t.type(sb2Errs[0].schemaPath, 'string');
-        t.type(sb2Errs[0].message, 'string');
-        t.type(sb2Errs[0].params, 'object');
-        t.type(sb2Errs[0].params.missingProperty, 'string');
-        t.end();
+        assert.equal(Array.isArray(sb2Errs), true);
+        assert.equal(typeof res, 'undefined');
+        assert.equal(typeof sb2Errs[0], 'object');
+        assert.equal(typeof sb2Errs[0].keyword, 'string');
+        assert.equal(typeof sb2Errs[0].instancePath, 'string');
+        assert.equal(typeof sb2Errs[0].schemaPath, 'string');
+        assert.equal(typeof sb2Errs[0].message, 'string');
+        assert.equal(typeof sb2Errs[0].params, 'object');
+        assert.equal(typeof sb2Errs[0].params.missingProperty, 'string');
+        done();
     });
 });
 
 // Test layer order rules
-test('sb3 json with valid layerOrder props for stage and sprites', function (t) {
+test('sb3 json with valid layerOrder props for stage and sprites', function (t, done) {
     validate(false, JSON.parse(data.layerOrderSB3Json), function (err, res) {
-        t.equal(err, null);
-        t.type(res, 'object');
-        t.end();
+        assert.equal(err, null);
+        assert.equal(typeof res, 'object');
+        done();
     });
 });
 
-test('sb3 json with invalid layerOrder prop for stage', function (t) {
+test('sb3 json with invalid layerOrder prop for stage', function (t, done) {
     validate(false, JSON.parse(data.invalidStageLayerSB3Json), function (err, res) {
-        t.type(err, 'object');
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'object');
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('sb3 json with invalid layerOrder prop for sprite', function (t) {
+test('sb3 json with invalid layerOrder prop for sprite', function (t, done) {
     validate(false, JSON.parse(data.invalidSpriteLayerSB3Json), function (err, res) {
-        t.type(err, 'object');
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'object');
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
 // Sprites should not be named _stage_
-test('sb3 json with invalid sprite name', function (t) {
+test('sb3 json with invalid sprite name', function (t, done) {
     validate(false, JSON.parse(data.invalidSpriteNameSB3Json), function (err, res) {
-        t.type(err, 'object');
-        t.type(res, 'undefined');
-        t.end();
+        assert.equal(typeof err, 'object');
+        assert.equal(typeof res, 'undefined');
+        done();
     });
 });
 
-test('sb3 errors listed before sb2 errors', function (t) {
+test('sb3 errors listed before sb2 errors', function (t, done) {
     validate(false, {'this object is': 'invalid'}, function (err) {
         const keys = Object.keys(err);
         const sb2Index = keys.indexOf('sb2Errors');
         const sb3Index = keys.indexOf('sb3Errors');
-        t.not(sb2Index, -1);
-        t.not(sb3Index, -1);
-        t.ok(sb3Index < sb2Index);
-        t.end();
+        assert.notEqual(sb2Index, -1);
+        assert.notEqual(sb3Index, -1);
+        assert.ok(sb3Index < sb2Index);
+        done();
     });
 });
 
-test('Uses sb3fix if validation fails', function (t) {
+test('Uses sb3fix if validation fails', function (t, done) {
     var invalidSprite = {
         isStage: false,
         name: 'Sprite1',
@@ -141,9 +142,9 @@ test('Uses sb3fix if validation fails', function (t) {
         rotationStyle: 'all around'
     };
     validate(true, invalidSprite, function (err, res) {
-        t.equal(err, null);
-        t.equal(res.costumes.length, 1); // sb3fix will add a costume
-        t.end();
+        assert.equal(err, null);
+        assert.equal(res.costumes.length, 1); // sb3fix will add a costume
+        done();
     });
 });
 
@@ -175,7 +176,7 @@ var makeSprite3 = function (blocks, costumes) {
     };
 };
 
-test('sb3 inputs and top level primitives', function (t) {
+test('sb3 inputs and top level primitives', function (t, done) {
     var sprite = makeSprite3({
         a: {
             opcode: 'motion_movesteps',
@@ -200,13 +201,13 @@ test('sb3 inputs and top level primitives', function (t) {
         c: [13, 'my list', 'id', 10, 20]
     });
     validate(true, sprite, function (err, res) {
-        t.equal(err, null);
-        t.equal(res.projectVersion, 3);
-        t.end();
+        assert.equal(err, null);
+        assert.equal(res.projectVersion, 3);
+        done();
     });
 });
 
-test('sb3 duplicate costumes are rejected', function (t) {
+test('sb3 duplicate costumes are rejected', function (t, done) {
     var costume = {
         assetId: '1'.repeat(32),
         dataFormat: 'png',
@@ -221,42 +222,42 @@ test('sb3 duplicate costumes are rejected', function (t) {
         assetId: '1'.repeat(32)
     };
     validate(true, makeSprite3({}, [costume, reordered]), function (err) {
-        t.type(err, 'object');
-        t.equal(err.sb3Errors[0].message, 'Duplicate costumes or sounds');
-        t.end();
+        assert.equal(typeof err, 'object');
+        assert.equal(err.sb3Errors[0].message, 'Duplicate costumes or sounds');
+        done();
     });
 });
 
-test('sb3 costumes that differ only by name are allowed', function (t) {
+test('sb3 costumes that differ only by name are allowed', function (t, done) {
     var a = {assetId: '1'.repeat(32), dataFormat: 'png', name: 'a'};
     var b = {assetId: '1'.repeat(32), dataFormat: 'png', name: 'b'};
     validate(true, makeSprite3({}, [a, b]), function (err, res) {
-        t.equal(err, null);
-        t.equal(res.costumes.length, 2);
-        t.end();
+        assert.equal(err, null);
+        assert.equal(res.costumes.length, 2);
+        done();
     });
 });
 
-test('NaN and Infinity are allowed as numbers', function (t) {
+test('NaN and Infinity are allowed as numbers', function (t, done) {
     var sprite2 = JSON.parse('{"objName":"Sprite1","costumes":[],"currentCostumeIndex":0,"scratchX":1e400}');
-    t.equal(sprite2.scratchX, Infinity);
+    assert.equal(sprite2.scratchX, Infinity);
     validate(true, sprite2, function (err, res) {
-        t.equal(err, null);
-        t.equal(res.projectVersion, 2);
+        assert.equal(err, null);
+        assert.equal(res.projectVersion, 2);
 
         var sprite3 = makeSprite3({});
         sprite3.x = Infinity;
         sprite3.y = -Infinity;
         sprite3.direction = NaN;
         validate(true, sprite3, function (err2, res2) {
-            t.equal(err2, null);
-            t.equal(res2.projectVersion, 3);
-            t.end();
+            assert.equal(err2, null);
+            assert.equal(res2.projectVersion, 3);
+            done();
         });
     });
 });
 
-test('sb3 duplicate check compares special keys as properties and NaN as unequal', function (t) {
+test('sb3 duplicate check compares special keys as properties and NaN as unequal', function (t, done) {
     var assetId = 'a'.repeat(32);
     var costume = function (extra) {
         return Object.assign({assetId: assetId, name: 'c1', dataFormat: 'svg', md5ext: assetId + '.svg'}, extra);
@@ -272,11 +273,11 @@ test('sb3 duplicate check compares special keys as properties and NaN as unequal
     ];
     var next = function (i) {
         if (i === cases.length) {
-            t.end();
+            done();
             return;
         }
         validate(true, makeSprite3({}, cases[i].costumes), function (err) {
-            t.equal(err === null, cases[i].valid, 'case ' + i);
+            assert.equal(err === null, cases[i].valid, 'case ' + i);
             next(i + 1);
         });
     };
