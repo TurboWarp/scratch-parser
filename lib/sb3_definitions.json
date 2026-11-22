@@ -4,16 +4,10 @@
     "description": "Scratch 3.0 Project and Sprite Schema Definitions",
     "definitions": {
         "optionalString": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "null"}
-            ]
+            "type": ["string", "null"]
         },
         "optionalNumber": {
-            "oneOf": [
-                {"type": "number"},
-                {"type": "null"}
-            ]
+            "type": ["number", "null"]
         },
         "boolOrOptBoolString": {
             "oneOf": [
@@ -24,10 +18,7 @@
             ]
         },
         "stringOrNumber": {
-            "oneOf": [
-                {"type": "string"},
-                {"type": "number"}
-            ]
+            "type": ["string", "number"]
         },
         "scalarVal": {},
         "assetId": {
@@ -201,20 +192,34 @@
             "maxItems": 5
         },
         "topLevelPrimitive": {
-            "oneOf": [
-                {"$ref":"#/definitions/variable_primitive"},
-                {"$ref":"#/definitions/list_primitive"}
-            ]
+            "description": "Selects the primitive schema using the first element instead of oneOf, which is much faster.",
+            "if": {"items": [{"enum": [12]}]},
+            "then": {"$ref":"#/definitions/variable_primitive"},
+            "else": {"$ref":"#/definitions/list_primitive"}
         },
         "inputPrimitive": {
-            "oneOf": [
-                {"$ref":"#/definitions/num_primitive"},
-                {"$ref":"#/definitions/color_primitive"},
-                {"$ref":"#/definitions/text_primitive"},
-                {"$ref":"#/definitions/broadcast_primitive"},
-                {"$ref":"#/definitions/variable_primitive"},
-                {"$ref":"#/definitions/list_primitive"}
-            ]
+            "description": "Selects the primitive schema using the first element instead of oneOf, which is much faster. Ordered by how common each primitive is. minItems rejects [], which would otherwise match several primitives.",
+            "type": "array",
+            "minItems": 1,
+            "if": {"items": [{"enum": [10]}]},
+            "then": {"$ref":"#/definitions/text_primitive"},
+            "else": {
+                "if": {"items": [{"enum": [4,5,6,7,8]}]},
+                "then": {"$ref":"#/definitions/num_primitive"},
+                "else": {
+                    "if": {"items": [{"enum": [12]}]},
+                    "then": {"$ref":"#/definitions/variable_primitive"},
+                    "else": {
+                        "if": {"items": [{"enum": [9]}]},
+                        "then": {"$ref":"#/definitions/color_primitive"},
+                        "else": {
+                            "if": {"items": [{"enum": [11]}]},
+                            "then": {"$ref":"#/definitions/broadcast_primitive"},
+                            "else": {"$ref":"#/definitions/list_primitive"}
+                        }
+                    }
+                }
+            }
         },
         "block": {
             "type": "object",
@@ -237,10 +242,9 @@
                             }
                         ],
                         "additionalItems": {
-                            "oneOf": [
-                                {"$ref":"#/definitions/optionalString"},
-                                {"$ref":"#/definitions/inputPrimitive"}
-                            ]
+                            "if": {"type": "array"},
+                            "then": {"$ref":"#/definitions/inputPrimitive"},
+                            "else": {"$ref":"#/definitions/optionalString"}
                         }
                     }
                 },
@@ -393,10 +397,9 @@
                 "blocks": {
                     "type": "object",
                     "additionalProperties": {
-                        "oneOf": [
-                            {"$ref":"#/definitions/block"},
-                            {"$ref":"#/definitions/topLevelPrimitive"}
-                        ]
+                        "if": {"type": "array"},
+                        "then": {"$ref":"#/definitions/topLevelPrimitive"},
+                        "else": {"$ref":"#/definitions/block"}
                     }
                 },
                 "variables": {
@@ -418,13 +421,11 @@
                 "costumes": {
                     "type": "array",
                     "items": {"$ref":"#/definitions/costume"},
-                    "minItems": 1,
-                    "uniqueItems": true
+                    "minItems": 1
                 },
                 "sounds": {
                     "type": "array",
-                    "items": {"$ref":"#/definitions/sound"},
-                    "uniqueItems": true
+                    "items": {"$ref":"#/definitions/sound"}
                 },
                 "volume": {
                     "type": "number"

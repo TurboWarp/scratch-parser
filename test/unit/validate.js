@@ -146,3 +146,93 @@ test('Uses sb3fix if validation fails', function (t) {
         t.end();
     });
 });
+
+var makeSprite3 = function (blocks, costumes) {
+    return {
+        isStage: false,
+        name: 'Sprite1',
+        variables: {},
+        lists: {},
+        broadcasts: {},
+        blocks: blocks,
+        comments: {},
+        currentCostume: 0,
+        costumes: costumes || [{
+            assetId: '1'.repeat(32),
+            dataFormat: 'png',
+            name: 'costume1',
+            md5ext: '1'.repeat(32) + '.png'
+        }],
+        sounds: [],
+        volume: 100,
+        visible: true,
+        x: 0,
+        y: 0,
+        size: 100,
+        direction: 90,
+        draggable: false,
+        rotationStyle: 'all around'
+    };
+};
+
+test('sb3 inputs and top level primitives', function (t) {
+    var sprite = makeSprite3({
+        a: {
+            opcode: 'motion_movesteps',
+            next: null,
+            parent: null,
+            inputs: {
+                NUM: [1, [4, '10']],
+                COLOR: [1, [9, '#ff00ff']],
+                TEXT: [3, 'b', [10, 'hello']],
+                BROADCAST: [1, [11, 'message1', 'id']],
+                VAR: [3, [12, 'my variable', 'id'], [10, '']],
+                LIST: [3, [13, 'my list', 'id'], [10, '']],
+                EMPTY: [1, null]
+            },
+            fields: {},
+            shadow: false,
+            topLevel: true,
+            x: 0,
+            y: 0
+        },
+        b: [12, 'my variable', 'id', 10, 20],
+        c: [13, 'my list', 'id', 10, 20]
+    });
+    validate(true, sprite, function (err, res) {
+        t.equal(err, null);
+        t.equal(res.projectVersion, 3);
+        t.end();
+    });
+});
+
+test('sb3 duplicate costumes are rejected', function (t) {
+    var costume = {
+        assetId: '1'.repeat(32),
+        dataFormat: 'png',
+        name: 'costume1',
+        md5ext: '1'.repeat(32) + '.png'
+    };
+    // Same costume with properties in a different order
+    var reordered = {
+        md5ext: '1'.repeat(32) + '.png',
+        name: 'costume1',
+        dataFormat: 'png',
+        assetId: '1'.repeat(32)
+    };
+    validate(true, makeSprite3({}, [costume, reordered]), function (err) {
+        t.type(err, 'object');
+        t.equal(err.sb3Errors[0].message, 'Duplicate costumes or sounds');
+        t.end();
+    });
+});
+
+test('sb3 costumes that differ only by name are allowed', function (t) {
+    var a = {assetId: '1'.repeat(32), dataFormat: 'png', name: 'a'};
+    var b = {assetId: '1'.repeat(32), dataFormat: 'png', name: 'b'};
+    validate(true, makeSprite3({}, [a, b]), function (err, res) {
+        t.equal(err, null);
+        t.equal(res.costumes.length, 2);
+        t.end();
+    });
+});
